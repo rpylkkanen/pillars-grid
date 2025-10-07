@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import trimesh
 import io
+import os
 import time
 
 from layouts import (
