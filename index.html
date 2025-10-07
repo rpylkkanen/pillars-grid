@@ -380,7 +380,9 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:5000';
+        const API_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:5000' 
+            : window.location.origin;
         
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
