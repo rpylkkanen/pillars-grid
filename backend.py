@@ -24,6 +24,15 @@ from geometry import (
 app = Flask(__name__)
 CORS(app)
 
+@app.route('/')
+def serve_index():
+    # Adjust path if your index.html is inside a subfolder like 'pillars-grid'
+    # Here, I assume index.html is in the same folder as backend.py
+    
+    # If index.html is in the folder 'pillars-grid' relative to backend.py:
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    return send_from_directory(base_dir, 'index.html')
+
 @app.route('/preview', methods=['POST'])
 def preview():
     """Generate positions only for preview - lightweight, no 3D geometry"""
