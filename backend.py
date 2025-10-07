@@ -22,17 +22,40 @@ from geometry import (
     create_walls_from_bounds
 )
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 CORS(app)
 
 @app.route('/')
 def serve_index():
-    # Adjust path if your index.html is inside a subfolder like 'pillars-grid'
-    # Here, I assume index.html is in the same folder as backend.py
-    
-    # If index.html is in the folder 'pillars-grid' relative to backend.py:
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    return send_from_directory(base_dir, 'index.html')
+    return send_from_directory('.', 'index.html')
+
+@app.route('/style.css')
+def serve_css():
+    return send_from_directory('.', 'style.css')
+
+@app.route('/config.js')
+def serve_config():
+    return send_from_directory('.', 'config.js')
+
+@app.route('/drawing.js')
+def serve_drawing():
+    return send_from_directory('.', 'drawing.js')
+
+@app.route('/export.js')
+def serve_export():
+    return send_from_directory('.', 'export.js')
+
+@app.route('/export-image.js')
+def serve_export_image():
+    return send_from_directory('.', 'export-image.js')
+
+@app.route('/events.js')
+def serve_events():
+    return send_from_directory('.', 'events.js')
+
+@app.route('/main.js')
+def serve_main():
+    return send_from_directory('.', 'main.js')
 
 @app.route('/preview', methods=['POST'])
 def preview():
