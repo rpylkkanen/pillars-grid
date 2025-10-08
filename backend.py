@@ -22,40 +22,17 @@ from geometry import (
     create_walls_from_bounds
 )
 
-app = Flask(__name__, static_folder='static')
+app = Flask(__name__, static_folder='.')
 CORS(app)
 
 @app.route('/')
 def serve_index():
     return send_from_directory('.', 'index.html')
 
-@app.route('/style.css')
-def serve_css():
-    return send_from_directory('.', 'style.css')
-
-@app.route('/config.js')
-def serve_config():
-    return send_from_directory('.', 'config.js')
-
-@app.route('/drawing.js')
-def serve_drawing():
-    return send_from_directory('.', 'drawing.js')
-
-@app.route('/export.js')
-def serve_export():
-    return send_from_directory('.', 'export.js')
-
-@app.route('/export-image.js')
-def serve_export_image():
-    return send_from_directory('.', 'export-image.js')
-
-@app.route('/events.js')
-def serve_events():
-    return send_from_directory('.', 'events.js')
-
-@app.route('/main.js')
-def serve_main():
-    return send_from_directory('.', 'main.js')
+@app.route('/<path:filename>')
+def serve_static(filename):
+    # Serve any static file (.js, .css, etc.)
+    return send_from_directory('.', filename)
 
 @app.route('/preview', methods=['POST'])
 def preview():

@@ -1,0 +1,21 @@
+{
+  "fontSize": 14,
+  "fontWeight": "bold",
+  "dimensionColor": "#e74c3c",
+  "bracketColor": "#9b59b6",
+  "lineWidth": 2,
+  "labelBg": "#ffffff",
+  "labelOpacity": 0,
+  "labelPadding": 2,
+  "dashPattern": "3,3",
+  "capSize": 12,
+  "bracketSize": 12,
+  "dotSize": 4,
+  "labelOffset": 20,
+  "measurementOffset": -60,
+  "bracketLabelOffset": 30,
+  "spacingLabelOffset": -20,
+  "padXOffset": -30,
+  "padYOffset": -30,
+  "rotateVerticalLabels": true
+}

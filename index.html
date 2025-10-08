@@ -176,11 +176,27 @@
         </div>
     </div>
 
-    <script src="config.js"></script>
-    <script src="drawing.js"></script>
-    <script src="export.js"></script>
-    <script src="export-image.js"></script>
-    <script src="events.js"></script>
-    <script src="main.js"></script>
+    <!-- Load modules in order -->
+    <script src="measurement-styles.js"></script>
+    <script src="state.js"></script>
+    <script src="api.js"></script>
+    <script src="renderer.js"></script>
+    <script src="exporter.js"></script>
+    <script src="ui-controller.js"></script>
+    <script>
+        // Load custom styles on startup
+        fetch('measurement-styles.json')
+            .then(response => response.json())
+            .then(data => {
+                MeasurementStyles.load(data);
+                console.log('Custom measurement styles loaded');
+            })
+            .catch(err => console.log('Using default measurement styles'));
+        
+        // Initialize on DOM ready
+        document.addEventListener('DOMContentLoaded', () => {
+            UIController.init();
+        });
+    </script>
 </body>
 </html>
