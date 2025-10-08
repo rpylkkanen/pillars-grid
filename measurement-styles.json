@@ -10,7 +10,7 @@
   "dashPattern": "3,3",
   "capSize": 12,
   "bracketSize": 12,
-  "dotSize": 4,
+  "dotSize": 3,
   "labelOffset": 20,
   "measurementOffset": -60,
   "bracketLabelOffset": 16,
