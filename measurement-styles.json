@@ -1,5 +1,5 @@
 {
-  "fontSize": 14,
+  "fontSize": 12,
   "fontWeight": "bold",
   "dimensionColor": "#e74c3c",
   "bracketColor": "#9b59b6",
@@ -13,9 +13,9 @@
   "dotSize": 4,
   "labelOffset": 20,
   "measurementOffset": -60,
-  "bracketLabelOffset": 30,
+  "bracketLabelOffset": 16,
   "spacingLabelOffset": -20,
   "padXOffset": -30,
-  "padYOffset": -30,
+  "padYOffset": -32,
   "rotateVerticalLabels": true
 }
