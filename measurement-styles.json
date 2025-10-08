@@ -15,7 +15,7 @@
   "measurementOffset": -60,
   "bracketLabelOffset": 16,
   "spacingLabelOffset": -20,
-  "padXOffset": -30,
-  "padYOffset": -32,
+  "padXOffset": -40,
+  "padYOffset": -40,
   "rotateVerticalLabels": true
 }
