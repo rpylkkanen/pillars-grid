@@ -10,6 +10,7 @@ from layouts import (
     generate_hex_checkerboard,
     generate_hex_honeycomb_layout,
     generate_organic_hex_layout,
+    generate_voronoi_layout,
     get_positions_from_square_layout,
     get_positions_from_hex_layout,
     get_positions_from_organic_layout
@@ -48,6 +49,7 @@ def preview():
     
     hole_probability = params.get('hole_probability', 0.2)
     jitter = params.get('jitter', 0.075)
+    lloyd_iterations = params.get('lloyd_iterations', 0)
     seed = params.get('seed', 42)
     
     # Get positions without creating 3D geometry
@@ -62,6 +64,9 @@ def preview():
         pillar_positions, hole_positions = get_positions_from_hex_layout(layout, spacing)
     elif layout_type == 'organic':
         positions = generate_organic_hex_layout(rows, cols, hole_probability, jitter, spacing, seed)
+        pillar_positions, hole_positions = get_positions_from_organic_layout(positions)
+    elif layout_type == 'voronoi':
+        positions = generate_voronoi_layout(rows, cols, hole_probability, spacing, lloyd_iterations, seed)
         pillar_positions, hole_positions = get_positions_from_organic_layout(positions)
     
     all_positions = hole_positions + pillar_positions
@@ -98,6 +103,7 @@ def generate_stl():
     
     hole_probability = params.get('hole_probability', 0.2)
     jitter = params.get('jitter', 0.075)
+    lloyd_iterations = params.get('lloyd_iterations', 0)
     seed = params.get('seed', 42)
     
     # Generate layout and extract positions
@@ -112,6 +118,9 @@ def generate_stl():
         pillar_positions, hole_positions = get_positions_from_hex_layout(layout, spacing)
     elif layout_type == 'organic':
         positions = generate_organic_hex_layout(rows, cols, hole_probability, jitter, spacing, seed)
+        pillar_positions, hole_positions = get_positions_from_organic_layout(positions)
+    elif layout_type == 'voronoi':
+        positions = generate_voronoi_layout(rows, cols, hole_probability, spacing, lloyd_iterations, seed)
         pillar_positions, hole_positions = get_positions_from_organic_layout(positions)
     
     # Build geometry

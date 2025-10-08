@@ -18,7 +18,8 @@ const State = {
         wallThickness: 2.0,
         jitter: 0.05,
         holeProb: 0.20,
-        seed: 42
+        seed: 42,
+        lloydIterations: 0
     },
     
     // Server response data
@@ -85,6 +86,7 @@ const State = {
             wall_thickness: parseFloat(this.parameters.wallThickness),
             hole_probability: parseFloat(this.parameters.holeProb),
             jitter: parseFloat(this.parameters.jitter),
+            lloyd_iterations: parseInt(this.parameters.lloydIterations),  // ADD THIS
             seed: parseInt(this.parameters.seed)
         };
     },

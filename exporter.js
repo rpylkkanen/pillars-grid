@@ -161,6 +161,11 @@ Jitter: ${parameters.jitter} mm (random position deviation)
 Hole Probability: ${parameters.holeProb} (0.0 to 1.0)
 Random Seed: ${parameters.seed}
 
+=== VORONOI LAYOUT (if applicable) ===
+Lloyd's Relaxation Iterations: ${parameters.lloydIterations || 0} (0 = random, higher = more regular spacing)
+Hole Probability: ${parameters.holeProb} (0.0 to 1.0)
+Random Seed: ${parameters.seed}
+
 === STATISTICS ===
 Total Pillars: ${stats.pillars.length}
 Total Holes: ${stats.holes.length}
@@ -228,7 +233,11 @@ Pillar Density: ${innerWidth !== 'N/A' && innerHeight !== 'N/A' ?
             } else if (line.includes('Random Seed:')) {
                 const value = parseValue(line);
                 if (value) params.seed = parseInt(value);
+            } else if (line.includes("Lloyd's Relaxation Iterations:")) {
+                const value = parseInt(parseValue(line));
+                if (!isNaN(value)) params.lloydIterations = value;
             }
+
         });
         
         return params;

@@ -11,6 +11,8 @@ const UIController = {
     // Update management
     updateTimer: null,
     isUpdating: false,
+    updateRequestId: 0,
+    pendingUpdate: false,
     
     /**
      * Initialize the application
@@ -28,45 +30,68 @@ const UIController = {
      */
     scheduleUpdate() {
         clearTimeout(this.updateTimer);
-        this.updateTimer = setTimeout(() => this.update(), 10);
+        this.updateTimer = setTimeout(() => this.update(), 0);
     },
     
     /**
      * Main update cycle
      */
     async update() {
-        if (this.isUpdating) return;
+        // If already updating, mark that we need another update and return
+        if (this.isUpdating) {
+            this.pendingUpdate = true;
+            this._showPreviewLoading();
+            return;
+        }
         
         this.isUpdating = true;
+        this.pendingUpdate = false;
+        this._showPreviewLoading();
+        const currentRequestId = ++this.updateRequestId;
         
         try {
-            // Apply dimension locks before fetching
             this._applyDimensionLocks();
             
-            // Fetch preview data
             const apiParams = State.getAPIParameters();
             const data = await API.fetchPreview(apiParams);
+            
+            if (currentRequestId !== this.updateRequestId) {
+                return;
+            }
+            
             State.setPreviewData(data);
             
-            // Check if locks need adjustment
             const needsSecondFetch = this._adjustForLocks(data);
             
             if (needsSecondFetch) {
-                // Re-fetch with adjusted padding
                 const newApiParams = State.getAPIParameters();
                 const newData = await API.fetchPreview(newApiParams);
+                
+                if (currentRequestId !== this.updateRequestId) {
+                    return;
+                }
+                
                 State.setPreviewData(newData);
             }
             
-            // Render everything
             this._render();
             this._updateStats();
             
         } catch (error) {
-            console.error('Update error:', error);
-            this._showStatus(`Error: ${error.message}`, 'error');
+            if (currentRequestId === this.updateRequestId) {
+                console.error('Update error:', error);
+                this._showStatus(`Error: ${error.message}`, 'error');
+            }
         } finally {
             this.isUpdating = false;
+            
+            // If changes happened while updating, trigger another update
+            if (this.pendingUpdate) {
+                this.pendingUpdate = false;
+                setTimeout(() => this.update(), 50);
+            } else {
+                this._hidePreviewLoading();
+            }
         }
     },
     
@@ -144,7 +169,13 @@ const UIController = {
             holeProbNum: document.getElementById('holeProbNum'),
             seed: document.getElementById('seed'),
             linkPadding: document.getElementById('linkPadding'),
-            
+            lloydIterations: document.getElementById('lloydIterations'),
+            lloydIterationsNum: document.getElementById('lloydIterationsNum'),
+            holeProbVoronoi: document.getElementById('holeProbVoronoi'),
+            holeProbVoronoiNum: document.getElementById('holeProbVoronoiNum'),
+            seedVoronoi: document.getElementById('seedVoronoi'),
+            voronoiControls: document.getElementById('voronoiControls'),
+
             // UI controls
             zoomSlider: document.getElementById('zoomSlider'),
             showMeasurements: document.getElementById('showMeasurements'),
@@ -206,7 +237,9 @@ const UIController = {
             ['floorPaddingY', 'floorPaddingYNum'],
             ['wallThickness', 'wallThicknessNum'], 
             ['jitter', 'jitterNum'], 
-            ['holeProb', 'holeProbNum']
+            ['holeProb', 'holeProbNum'],
+            ['lloydIterations', 'lloydIterationsNum'],
+            ['holeProbVoronoi', 'holeProbVoronoiNum']
         ];
         
         dualPairs.forEach(([sliderKey, numberKey]) => {
@@ -242,6 +275,12 @@ const UIController = {
         
         // Seed
         this.elements.seed.addEventListener('change', (e) => {
+            State.setParameter('seed', parseInt(e.target.value));
+            this.scheduleUpdate();
+        });
+
+        // Voronoi seed
+        this.elements.seedVoronoi.addEventListener('change', (e) => {
             State.setParameter('seed', parseInt(e.target.value));
             this.scheduleUpdate();
         });
@@ -452,8 +491,20 @@ const UIController = {
     },
     
     _toggleOrganicControls() {
-        const isOrganic = State.parameters.layoutType === 'organic';
+        const layoutType = State.parameters.layoutType;
+        const isOrganic = layoutType === 'organic';
+        const isVoronoi = layoutType === 'voronoi';
+        
         this.elements.organicControls.style.display = isOrganic ? 'block' : 'none';
+        this.elements.voronoiControls.style.display = isVoronoi ? 'block' : 'none';
+        
+        // Sync shared parameters between organic and voronoi
+        if (isVoronoi) {
+            this.elements.holeProbVoronoi.value = State.parameters.holeProb;
+            this.elements.holeProbVoronoiNum.value = State.parameters.holeProb;
+            this.elements.seedVoronoi.value = State.parameters.seed;
+            this._updateValueDisplay('holeProbVoronoi', State.parameters.holeProb);
+        }
     },
     
     _updateLockButton(dimension) {
@@ -475,6 +526,16 @@ const UIController = {
         this.elements.status.className = 'generation-status ' + type;
     },
     
+    _showPreviewLoading() {
+        this._showStatus('⟳ Updating preview...', 'loading');
+    },
+    
+    _hidePreviewLoading() {
+        if (this.elements.status && this.elements.status.classList.contains('loading')) {
+            this._showStatus('', '');
+        }
+    },
+    
     _getParamKey(elementKey) {
         // Convert element key to parameter key (camelCase)
         const map = {
@@ -489,7 +550,9 @@ const UIController = {
             'floorPaddingY': 'floorPaddingY',
             'wallThickness': 'wallThickness',
             'jitter': 'jitter',
-            'holeProb': 'holeProb'
+            'holeProb': 'holeProb',
+            'lloydIterations': 'lloydIterations',
+            'holeProbVoronoi': 'holeProb'
         };
         return map[elementKey] || elementKey;
     },
@@ -500,7 +563,7 @@ const UIController = {
     },
     
     _parseValue(paramKey, value) {
-        if (['rows', 'cols', 'seed'].includes(paramKey)) {
+        if (['rows', 'cols', 'seed', 'lloydIterations'].includes(paramKey)) {
             return parseInt(value);
         }
         return parseFloat(value);

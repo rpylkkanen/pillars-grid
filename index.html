@@ -18,9 +18,10 @@
                     <option value="hex-checkerboard" selected>Hex Checkerboard</option>
                     <option value="hex-honeycomb">Hex Honeycomb</option>
                     <option value="organic">Organic</option>
+                    <option value="voronoi">Voronoi</option>
                 </select>
             </div>
-            
+
             <div class="control-group">
                 <label>Rows <span class="range-value" id="rowsValue">10</span></label>
                 <div class="dual-input">
@@ -136,6 +137,29 @@
                 </div>
             </div>
             
+            <div id="voronoiControls" style="display: none;">
+                <div class="control-group">
+                    <label>Lloyd's Relaxation Iterations <span class="range-value" id="lloydIterationsValue">0</span></label>
+                    <div class="dual-input">
+                        <input type="range" id="lloydIterations" min="0" max="50" value="0" step="1">
+                        <input type="number" id="lloydIterationsNum" min="0" max="50" value="0" step="1">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label>Hole Probability <span class="range-value" id="holeProbVoronoiValue">0.20</span></label>
+                    <div class="dual-input">
+                        <input type="range" id="holeProbVoronoi" min="0.0" max="1.0" value="0.20" step="0.001">
+                        <input type="number" id="holeProbVoronoiNum" min="0.0" max="1.0" value="0.20" step="0.001">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label>Random Seed</label>
+                    <input type="number" id="seedVoronoi" value="42">
+                </div>
+            </div>
+            
             <button id="generateBtn">Generate STL</button>
             <div class="button-group">
                 <button id="exportParamsBtn" class="secondary">Export Parameters</button>
@@ -158,6 +182,7 @@
                 <div>Density: <span id="statDensity">-</span></div>
                 <div>Height: <span id="statHeight">-</span></div>
             </div>
+
             <div class="zoom-control">
                 <label>Zoom:</label>
                 <input type="range" id="zoomSlider" min="0.3" max="2.0" value="0.85" step="0.05">
