@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pillar Layout Explorer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="panel controls">
+            <h2>Parameters</h2>
+            
+            <div class="control-group">
+                <label>Layout Type</label>
+                <select id="layoutType">
+                    <option value="square-checkerboard">Square Checkerboard</option>
+                    <option value="hex-checkerboard" selected>Hex Checkerboard</option>
+                    <option value="hex-honeycomb">Hex Honeycomb</option>
+                    <option value="organic">Organic</option>
+                    <option value="voronoi">Voronoi</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Rows <span class="range-value" id="rowsValue">10</span></label>
+                <div class="dual-input">
+                    <input type="range" id="rows" min="1" max="100" value="10" step="1">
+                    <input type="number" id="rowsNum" min="1" max="100" value="10" step="1">
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label>Columns <span class="range-value" id="colsValue">10</span></label>
+                <div class="dual-input">
+                    <input type="range" id="cols" min="1" max="100" value="10" step="1">
+                    <input type="number" id="colsNum" min="1" max="100" value="10" step="1">
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label>Spacing (mm) <span class="range-value" id="spacingValue">0.35</span></label>
+                <div class="dual-input">
+                    <input type="range" id="spacing" min="0.001" max="1.0" value="0.35" step="0.001">
+                    <input type="number" id="spacingNum" min="0.001" max="1.0" value="0.35" step="0.001">
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label>Pillar Radius (mm) <span class="range-value" id="pillarRadiusValue">0.125</span></label>
+                <div class="dual-input">
+                    <input type="range" id="pillarRadius" min="0.001" max="1.0" value="0.125" step="0.001">
+                    <input type="number" id="pillarRadiusNum" min="0.001" max="1.0" value="0.125" step="0.001">
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label>Pillar Height (mm) <span class="range-value" id="pillarHeightValue">10.0</span></label>
+                <div class="dual-input">
+                    <input type="range" id="pillarHeight" min="0.1" max="20.0" value="10.0" step="0.1">
+                    <input type="number" id="pillarHeightNum" min="0.1" max="20.0" value="10.0" step="0.1">
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label>Hole Radius (mm) <span class="range-value" id="holeRadiusValue">0.10</span></label>
+                <div class="dual-input">
+                    <input type="range" id="holeRadius" min="0.001" max="1.0" value="0.10" step="0.001">
+                    <input type="number" id="holeRadiusNum" min="0.001" max="1.0" value="0.10" step="0.001">
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label>Floor Thickness (mm) <span class="range-value" id="floorThicknessValue">2.0</span></label>
+                <div class="dual-input">
+                    <input type="range" id="floorThickness" min="0.1" max="5.0" value="2.0" step="0.1">
+                    <input type="number" id="floorThicknessNum" min="0.1" max="5.0" value="2.0" step="0.1">
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label>Floor Padding X (mm) <span class="range-value" id="floorPaddingXValue">0.25</span></label>
+                <div class="dual-input">
+                    <input type="range" id="floorPaddingX" min="-5.0" max="5.0" value="0.25" step="0.00001">
+                    <input type="number" id="floorPaddingXNum" value="0.25" step="0.00001">
+                </div>
+                <div class="dimension-lock">
+                    <input type="number" id="targetWidth" placeholder="Target inner width (mm)" step="0.00001">
+                    <button type="button" id="lockWidth">Lock Width</button>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label>Floor Padding Y (mm) <span class="range-value" id="floorPaddingYValue">0.25</span></label>
+                <div class="dual-input">
+                    <input type="range" id="floorPaddingY" min="-5.0" max="5.0" value="0.25" step="0.00001">
+                    <input type="number" id="floorPaddingYNum" value="0.25" step="0.00001">
+                </div>
+                <div class="dimension-lock">
+                    <input type="number" id="targetHeight" placeholder="Target inner height (mm)" step="0.00001">
+                    <button type="button" id="lockHeight">Lock Height</button>
+                </div>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="linkPadding" checked>
+                    Link X and Y padding
+                </label>
+            </div>
+            
+            <div class="control-group">
+                <label>Wall Thickness (mm) <span class="range-value" id="wallThicknessValue">2.0</span></label>
+                <div class="dual-input">
+                    <input type="range" id="wallThickness" min="0.0" max="10.0" value="2.0" step="0.1">
+                    <input type="number" id="wallThicknessNum" min="0.0" max="10.0" value="2.0" step="0.1">
+                </div>
+            </div>
+            
+            <div id="organicControls" style="display: none;">
+                <div class="control-group">
+                    <label>Jitter (mm) <span class="range-value" id="jitterValue">0.05</span></label>
+                    <div class="dual-input">
+                        <input type="range" id="jitter" min="0.0" max="1.0" value="0.05" step="0.001">
+                        <input type="number" id="jitterNum" min="0.0" max="1.0" value="0.05" step="0.001">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label>Hole Probability <span class="range-value" id="holeProbValue">0.20</span></label>
+                    <div class="dual-input">
+                        <input type="range" id="holeProb" min="0.0" max="1.0" value="0.20" step="0.001">
+                        <input type="number" id="holeProbNum" min="0.0" max="1.0" value="0.20" step="0.001">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label>Random Seed</label>
+                    <input type="number" id="seed" value="42">
+                </div>
+            </div>
+            
+            <div id="voronoiControls" style="display: none;">
+                <div class="control-group">
+                    <label>Lloyd's Relaxation Iterations <span class="range-value" id="lloydIterationsValue">0</span></label>
+                    <div class="dual-input">
+                        <input type="range" id="lloydIterations" min="0" max="50" value="0" step="1">
+                        <input type="number" id="lloydIterationsNum" min="0" max="50" value="0" step="1">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label>Hole Probability <span class="range-value" id="holeProbVoronoiValue">0.20</span></label>
+                    <div class="dual-input">
+                        <input type="range" id="holeProbVoronoi" min="0.0" max="1.0" value="0.20" step="0.001">
+                        <input type="number" id="holeProbVoronoiNum" min="0.0" max="1.0" value="0.20" step="0.001">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label>Random Seed</label>
+                    <input type="number" id="seedVoronoi" value="42">
+                </div>
+            </div>
+            
+            <button id="generateBtn">Generate STL</button>
+            <div class="button-group">
+                <button id="exportParamsBtn" class="secondary">Export Parameters</button>
+                <button id="exportImageBtn" class="secondary">Export Image</button>
+            </div>
+            <div class="control-group" style="margin-top: 16px;">
+                <label>Load Parameters</label>
+                <input type="file" id="loadParamsInput" accept=".txt">
+            </div>
+            <div class="generation-status" id="status"></div>
+        </div>
+        
+        <div class="panel canvas-panel">
+            <h2>Top-Down Preview</h2>
+            <div class="stats" id="stats">
+                <div>Pillars: <span id="statPillars">-</span></div>
+                <div>Holes: <span id="statHoles">-</span></div>
+                <div>Inner: <span id="statDims">-</span></div>
+                <div>Total: <span id="statTotal">-</span></div>
+                <div>Density: <span id="statDensity">-</span></div>
+                <div>Height: <span id="statHeight">-</span></div>
+            </div>
+
+            <div class="zoom-control">
+                <label>Zoom:</label>
+                <input type="range" id="zoomSlider" min="0.3" max="2.0" value="0.85" step="0.05">
+                <span id="zoomValue">85%</span>
+            </div>
+            <div class="zoom-control">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="showMeasurements">
+                    Show Measurements
+                </label>
+            </div>
+            <div class="canvas-container">
+                <canvas id="canvas"></canvas>
+                <div id="sideView" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load modules in order -->
+    <script src="measurement-styles.js"></script>
+    <script src="state.js"></script>
+    <script src="api.js"></script>
+    <script src="renderer.js"></script>
+    <script src="exporter.js"></script>
+    <script src="ui-controller.js"></script>
+    <script>
+        // Load custom styles on startup
+        fetch('measurement-styles.json')
+            .then(response => response.json())
+            .then(data => {
+                MeasurementStyles.load(data);
+                console.log('Custom measurement styles loaded');
+            })
+            .catch(err => console.log('Using default measurement styles'));
+        
+        // Initialize on DOM ready
+        document.addEventListener('DOMContentLoaded', () => {
+            UIController.init();
+        });
+    </script>
+</body>
+</html>

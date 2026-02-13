@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Measurement Visualization Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .control-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 4px;
+        }
+        input[type="range"], input[type="number"], input[type="color"] {
+            width: 100%;
+            padding: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        button:hover {
+            background: #357abd;
+        }
+        .canvas-area {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        canvas {
+            border: 1px solid #ddd;
+            background: #fafafa;
+            display: block;
+            width: 100%;
+        }
+        h2, h3 {
+            margin-top: 0;
+            font-size: 18px;
+            color: #333;
+        }
+        h3 {
+            font-size: 16px;
+        }
+        .code-section {
+            margin-top: 20px;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 11px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="controls">
+            <h2>Measurement Style Controls</h2>
+            
+            <div class="control-group">
+                <label>Font Size</label>
+                <input type="range" id="fontSize" min="8" max="16" value="11" step="1">
+                <span id="fontSizeValue">11px</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Font Weight</label>
+                <select id="fontWeight">
+                    <option value="normal">Normal</option>
+                    <option value="bold" selected>Bold</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>Line Color (Dimensions)</label>
+                <input type="color" id="dimensionColor" value="#e74c3c">
+            </div>
+            
+            <div class="control-group">
+                <label>Line Color (Brackets)</label>
+                <input type="color" id="bracketColor" value="#9b59b6">
+            </div>
+            
+            <div class="control-group">
+                <label>Line Width</label>
+                <input type="range" id="lineWidth" min="0.5" max="3" value="1.5" step="0.1">
+                <span id="lineWidthValue">1.5px</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Label Background</label>
+                <input type="color" id="labelBg" value="#ffffff">
+            </div>
+            
+            <div class="control-group">
+                <label>Label Opacity</label>
+                <input type="range" id="labelOpacity" min="0" max="1" value="0" step="0.05">
+                <span id="labelOpacityValue">0</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Label Padding</label>
+                <input type="range" id="labelPadding" min="2" max="10" value="4" step="1">
+                <span id="labelPaddingValue">4px</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Dashed Line Pattern</label>
+                <input type="text" id="dashPattern" value="3,3" placeholder="e.g., 3,3 or 5,2">
+            </div>
+            
+            <div class="control-group">
+                <label>Arrow/Cap Size</label>
+                <input type="range" id="capSize" min="4" max="16" value="8" step="1">
+                <span id="capSizeValue">8px</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Bracket End Size</label>
+                <input type="range" id="bracketSize" min="5" max="20" value="10" step="1">
+                <span id="bracketSizeValue">10px</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Radius Dot Size</label>
+                <input type="range" id="dotSize" min="1" max="5" value="2" step="0.5">
+                <span id="dotSizeValue">2px</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Label Offset Distance</label>
+                <input type="range" id="labelOffset" min="10" max="40" value="20" step="1">
+                <span id="labelOffsetValue">20px</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Measurement Line Offset</label>
+                <input type="range" id="measurementOffset" min="-60" max="-20" value="-40" step="1">
+                <span id="measurementOffsetValue">-40px</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Bracket Label Offset (perpendicular)</label>
+                <input type="range" id="bracketLabelOffset" min="5" max="30" value="12" step="1">
+                <span id="bracketLabelOffsetValue">12px</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Spacing Label Offset (vertical)</label>
+                <input type="range" id="spacingLabelOffset" min="-20" max="20" value="0" step="1">
+                <span id="spacingLabelOffsetValue">0px</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Pad X Offset (vertical position)</label>
+                <input type="range" id="padXOffset" min="-80" max="-10" value="-35" step="1">
+                <span id="padXOffsetValue">-35px</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Pad Y Offset (horizontal position)</label>
+                <input type="range" id="padYOffset" min="-80" max="-10" value="-20" step="1">
+                <span id="padYOffsetValue">-20px</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Rotate Vertical Labels</label>
+                <input type="checkbox" id="rotateVerticalLabels" checked>
+            </div>
+            
+            <button onclick="redraw()">Redraw</button>
+            <button onclick="resetDefaults()">Reset to Defaults</button>
+            <button onclick="exportSettings()">Export Settings</button>
+            
+            <div class="control-group">
+                <label>Load Settings</label>
+                <input type="file" id="loadSettings" accept=".json">
+            </div>
+            
+            <div class="code-section">
+                <strong>Tip:</strong> Export settings as JSON, then use MeasurementStyles.load() in your app
+            </div>
+        </div>
+        
+        <div class="canvas-area">
+            <h2>Measurement Visualization Test</h2>
+            <canvas id="testCanvas" width="900" height="600"></canvas>
+            <div style="margin-top: 20px; padding: 20px; background: #f9f9f9; border-radius: 4px;">
+                <h3>Side View</h3>
+                <div id="sideViewContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+    
+    <script>
+        const mockPreviewData = {
+            pillars: [
+                {x: 2, y: 2}, {x: 2.35, y: 2}, {x: 2.7, y: 2},
+                {x: 2, y: 2.35}, {x: 2.35, y: 2.35}, {x: 2.7, y: 2.35}
+            ],
+            holes: [{x: 1.5, y: 1.5}, {x: 3.2, y: 1.5}],
+            bounds: {minX: 1.25, maxX: 3.45, minY: 1.25, maxY: 2.6}
+        };
+        
+        const mockParameters = {
+            spacing: 0.35, pillarRadius: 0.125, holeRadius: 0.10,
+            floorPaddingX: 0.25, floorPaddingY: 0.25, wallThickness: 0.5,
+            floorThickness: 2.0, pillarHeight: 10.0
+        };
+        
+        const canvas = document.getElementById('testCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        function applyCustomStyles() {
+            const styles = {
+                fontSize: document.getElementById('fontSize').value,
+                fontWeight: document.getElementById('fontWeight').value,
+                dimensionColor: document.getElementById('dimensionColor').value,
+                bracketColor: document.getElementById('bracketColor').value,
+                lineWidth: document.getElementById('lineWidth').value,
+                labelBg: document.getElementById('labelBg').value,
+                labelOpacity: document.getElementById('labelOpacity').value,
+                labelPadding: document.getElementById('labelPadding').value,
+                dashPattern: document.getElementById('dashPattern').value.split(',').map(x => parseFloat(x.trim())),
+                capSize: parseFloat(document.getElementById('capSize').value),
+                bracketSize: parseFloat(document.getElementById('bracketSize').value),
+                dotSize: parseFloat(document.getElementById('dotSize').value),
+                labelOffset: parseFloat(document.getElementById('labelOffset').value),
+                measurementOffset: parseFloat(document.getElementById('measurementOffset').value),
+                bracketLabelOffset: parseFloat(document.getElementById('bracketLabelOffset').value),
+                spacingLabelOffset: parseFloat(document.getElementById('spacingLabelOffset').value),
+                padXOffset: parseFloat(document.getElementById('padXOffset').value),
+                padYOffset: parseFloat(document.getElementById('padYOffset').value),
+                rotateVerticalLabels: document.getElementById('rotateVerticalLabels').checked
+            };
+            
+            function drawLabel(ctx, text, x, y, color, bgColor, opacity, padding, fontSize, fontWeight) {
+                ctx.font = `${fontWeight} ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const metrics = ctx.measureText(text);
+                if (parseFloat(opacity) > 0) {
+                    ctx.fillStyle = bgColor;
+                    ctx.globalAlpha = parseFloat(opacity);
+                    ctx.fillRect(x - metrics.width/2 - padding, y - fontSize/2 - 2, metrics.width + padding*2, fontSize + 4);
+                    ctx.globalAlpha = 1;
+                }
+                ctx.fillStyle = color;
+                ctx.fillText(text, x, y);
+            }
+            
+            Renderer._drawDimensionLine = function(ctx, x1, y1, x2, y2, label, offset) {
+                if (offset === undefined || offset === 20 || offset === -40) offset = styles.measurementOffset;
+                ctx.save();
+                ctx.strokeStyle = styles.dimensionColor;
+                ctx.fillStyle = styles.dimensionColor;
+                ctx.lineWidth = parseFloat(styles.lineWidth);
+                
+                const dx = x2 - x1, dy = y2 - y1, length = Math.sqrt(dx * dx + dy * dy);
+                const perpX = -dy / length * offset, perpY = dx / length * offset;
+                const startX = x1 + perpX, startY = y1 + perpY, endX = x2 + perpX, endY = y2 + perpY;
+                
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+                
+                const arrowAngle = Math.PI / 6;
+                const arrowDx = endX - startX, arrowDy = endY - startY, arrowLength = Math.sqrt(arrowDx * arrowDx + arrowDy * arrowDy);
+                const arrowUnitX = arrowDx / arrowLength, arrowUnitY = arrowDy / arrowLength;
+                
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(startX + styles.capSize * (arrowUnitX * Math.cos(arrowAngle) + arrowUnitY * Math.sin(arrowAngle)),
+                          startY + styles.capSize * (arrowUnitY * Math.cos(arrowAngle) - arrowUnitX * Math.sin(arrowAngle)));
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(startX + styles.capSize * (arrowUnitX * Math.cos(arrowAngle) - arrowUnitY * Math.sin(arrowAngle)),
+                          startY + styles.capSize * (arrowUnitY * Math.cos(arrowAngle) + arrowUnitX * Math.sin(arrowAngle)));
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(endX, endY);
+                ctx.lineTo(endX - styles.capSize * (arrowUnitX * Math.cos(arrowAngle) + arrowUnitY * Math.sin(arrowAngle)),
+                          endY - styles.capSize * (arrowUnitY * Math.cos(arrowAngle) - arrowUnitX * Math.sin(arrowAngle)));
+                ctx.moveTo(endX, endY);
+                ctx.lineTo(endX - styles.capSize * (arrowUnitX * Math.cos(arrowAngle) - arrowUnitY * Math.sin(arrowAngle)),
+                          endY - styles.capSize * (arrowUnitY * Math.cos(arrowAngle) + arrowUnitX * Math.sin(arrowAngle)));
+                ctx.stroke();
+                
+                ctx.setLineDash(styles.dashPattern);
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(startX, startY);
+                ctx.moveTo(x2, y2);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                const cleanLabel = label.replace(/\s*\(center-to-center\)/, '');
+                let midX = (startX + endX) / 2, midY = (startY + endY) / 2;
+                if (cleanLabel.includes('Spacing:')) midY += styles.spacingLabelOffset;
+                drawLabel(ctx, cleanLabel, midX, midY, styles.dimensionColor, styles.labelBg, styles.labelOpacity, styles.labelPadding, styles.fontSize, styles.fontWeight);
+                ctx.restore();
+            };
+            
+            Renderer._drawBracket = function(ctx, x1, y1, x2, y2, label) {
+                ctx.save();
+                ctx.strokeStyle = styles.bracketColor;
+                ctx.fillStyle = styles.bracketColor;
+                ctx.lineWidth = parseFloat(styles.lineWidth);
+                
+                const isHorizontal = Math.abs(y2 - y1) < Math.abs(x2 - x1);
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+                
+                if (isHorizontal) {
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1 - styles.bracketSize/2);
+                    ctx.lineTo(x1, y1 + styles.bracketSize/2);
+                    ctx.moveTo(x2, y2 - styles.bracketSize/2);
+                    ctx.lineTo(x2, y2 + styles.bracketSize/2);
+                    ctx.stroke();
+                } else {
+                    ctx.beginPath();
+                    ctx.moveTo(x1 - styles.bracketSize/2, y1);
+                    ctx.lineTo(x1 + styles.bracketSize/2, y1);
+                    ctx.moveTo(x2 - styles.bracketSize/2, y2);
+                    ctx.lineTo(x2 + styles.bracketSize/2, y2);
+                    ctx.stroke();
+                }
+                
+                let labelX = (x1 + x2) / 2, labelY = (y1 + y2) / 2;
+                if (isHorizontal) {
+                    labelY -= styles.bracketLabelOffset;
+                    drawLabel(ctx, label, labelX, labelY, styles.bracketColor, styles.labelBg, styles.labelOpacity, styles.labelPadding, styles.fontSize, styles.fontWeight);
+                } else {
+                    labelX -= styles.bracketLabelOffset;
+                    if (styles.rotateVerticalLabels) {
+                        ctx.save();
+                        ctx.translate(labelX, labelY);
+                        ctx.rotate(-Math.PI / 2);
+                        drawLabel(ctx, label, 0, 0, styles.bracketColor, styles.labelBg, styles.labelOpacity, styles.labelPadding, styles.fontSize, styles.fontWeight);
+                        ctx.restore();
+                    } else {
+                        drawLabel(ctx, label, labelX, labelY, styles.bracketColor, styles.labelBg, styles.labelOpacity, styles.labelPadding, styles.fontSize, styles.fontWeight);
+                    }
+                }
+                ctx.restore();
+            };
+            
+            // Override _drawMeasurements to fix padding visualization
+            const originalDrawMeasurements = Renderer._drawMeasurements;
+            Renderer._drawMeasurements = function(ctx, previewData, transform, parameters) {
+                const { pillars, holes } = previewData;
+                const { bounds, scale, offsetX, offsetY } = transform;
+                const spacing = parameters.spacing;
+                const pillarRadiusValue = parameters.pillarRadius;
+                const holeRadiusValue = parameters.holeRadius;
+                const floorPaddingX = parameters.floorPaddingX;
+                const floorPaddingY = parameters.floorPaddingY;
+                const wt = parameters.wallThickness;
+                
+                if (pillars.length < 2) return;
+                
+                // Find adjacent pillars for spacing
+                const sortedPillars = [...pillars].sort((a, b) => a.y - b.y || a.x - b.x);
+                let pillar1 = null, pillar2 = null;
+                
+                for (let i = 0; i < sortedPillars.length - 1; i++) {
+                    const p1 = sortedPillars[i];
+                    const p2 = sortedPillars[i + 1];
+                    const dist = Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2);
+                    
+                    if (Math.abs(dist - spacing) < 0.01) {
+                        pillar1 = p1;
+                        pillar2 = p2;
+                        break;
+                    }
+                }
+                
+                // Draw spacing dimension
+                if (pillar1 && pillar2) {
+                    Renderer._drawDimensionLine(
+                        ctx, 
+                        pillar1.x * scale + offsetX, 
+                        pillar1.y * scale + offsetY,
+                        pillar2.x * scale + offsetX, 
+                        pillar2.y * scale + offsetY,
+                        `Spacing: ${spacing.toFixed(3)} mm`,
+                        -40
+                    );
+                }
+                
+                // Draw pillar radius
+                if (pillars.length > 0) {
+                    const pillar = pillars[0];
+                    Renderer._drawRadiusLine(
+                        ctx,
+                        pillar.x * scale + offsetX,
+                        pillar.y * scale + offsetY,
+                        pillarRadiusValue * scale,
+                        `Pillar r=${pillarRadiusValue.toFixed(3)} mm`,
+                        -45
+                    );
+                }
+                
+                // Draw hole radius
+                if (holes.length > 0) {
+                    const hole = holes[0];
+                    Renderer._drawRadiusLine(
+                        ctx,
+                        hole.x * scale + offsetX,
+                        hole.y * scale + offsetY,
+                        holeRadiusValue * scale,
+                        `Hole r=${holeRadiusValue.toFixed(3)} mm`,
+                        135
+                    );
+                }
+                
+                // Calculate positions - INSIDE the walls
+                const innerWidth = bounds.maxX - bounds.minX;
+                const innerHeight = bounds.maxY - bounds.minY;
+                const floorLeftX = bounds.minX * scale + offsetX;    // Inner edge of floor (inside wall)
+                const floorRightX = bounds.maxX * scale + offsetX;
+                const floorTopY = bounds.minY * scale + offsetY;
+                const floorBottomY = bounds.maxY * scale + offsetY;
+                
+                // Find outermost pillar/hole positions to calculate actual padding
+                const allPositions = [...pillars, ...holes];
+                const xValues = allPositions.map(p => p.x);
+                const yValues = allPositions.map(p => p.y);
+                const leftmostX = Math.min(...xValues) * scale + offsetX;
+                const topmostY = Math.min(...yValues) * scale + offsetY;
+                
+                // Padding X: from floor left edge to leftmost pillar/hole center (INSIDE walls)
+                if (Math.abs(floorPaddingX) > 0.001) {
+                    Renderer._drawBracket(
+                        ctx,
+                        floorLeftX,                   // Start at floor edge
+                        floorTopY + styles.padXOffset, // Adjustable vertical position
+                        leftmostX,                    // End at leftmost pillar/hole center
+                        floorTopY + styles.padXOffset,
+                        `Pad X: ${Math.abs(floorPaddingX).toFixed(3)} mm`
+                    );
+                }
+                
+                // Padding Y: from floor top edge to topmost pillar/hole center (INSIDE walls)
+                if (Math.abs(floorPaddingY) > 0.001) {
+                    Renderer._drawBracket(
+                        ctx,
+                        floorLeftX + styles.padYOffset, // Adjustable horizontal position
+                        floorTopY,                     // Start at floor edge
+                        floorLeftX + styles.padYOffset,
+                        topmostY,                      // End at topmost pillar/hole center
+                        `Pad Y: ${Math.abs(floorPaddingY).toFixed(3)} mm`
+                    );
+                }
+                
+                // Wall thickness (horizontal, middle of left wall)
+                if (wt > 0) {
+                    const wtScaled = wt * scale;
+                    Renderer._drawBracket(
+                        ctx,
+                        floorLeftX - wtScaled,        // Outside of wall
+                        floorTopY + innerHeight * scale / 2,
+                        floorLeftX,                   // Inside of wall (floor edge)
+                        floorTopY + innerHeight * scale / 2,
+                        `Wall: ${wt.toFixed(2)} mm`
+                    );
+                }
+            };
+            
+            Renderer._drawRadiusLine = function(ctx, centerX, centerY, radius, label, angle = 45) {
+                ctx.save();
+                ctx.strokeStyle = styles.dimensionColor;
+                ctx.fillStyle = styles.dimensionColor;
+                ctx.lineWidth = parseFloat(styles.lineWidth);
+                
+                const rad = angle * Math.PI / 180;
+                const endX = centerX + Math.cos(rad) * radius, endY = centerY + Math.sin(rad) * radius;
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, styles.dotSize, 0, Math.PI * 2);
+                ctx.fill();
+                
+                const labelX = centerX + Math.cos(rad) * (radius + styles.labelOffset);
+                const labelY = centerY + Math.sin(rad) * (radius + styles.labelOffset);
+                drawLabel(ctx, label, labelX, labelY, styles.dimensionColor, styles.labelBg, styles.labelOpacity, styles.labelPadding, styles.fontSize, styles.fontWeight);
+                ctx.restore();
+            };
+        }
+        
+        function redraw() {
+            applyCustomStyles();
+            Renderer.drawPreview(ctx, canvas.width, canvas.height, mockPreviewData, {
+                zoom: 1.2, showMeasurements: true, parameters: mockParameters
+            });
+            
+            // Generate side view with custom styles
+            const styles = {
+                fontSize: parseInt(document.getElementById('fontSize').value),
+                fontWeight: document.getElementById('fontWeight').value,
+                dimensionColor: document.getElementById('dimensionColor').value,
+                bracketColor: document.getElementById('bracketColor').value,
+                lineWidth: parseFloat(document.getElementById('lineWidth').value)
+            };
+            document.getElementById('sideViewContainer').innerHTML = generateCustomSideView(mockParameters, styles);
+        }
+        
+        function generateCustomSideView(parameters, styles) {
+            const floorThickness = parameters.floorThickness;
+            const pillarHeight = parameters.pillarHeight;
+            const totalHeight = floorThickness + pillarHeight;
+            
+            const svgWidth = 380;
+            const svgHeight = 360;
+            const maxHeightForContent = svgHeight - 60;
+            const scale = maxHeightForContent / totalHeight;
+            
+            const scaledTotalHeight = totalHeight * scale;
+            const baseY = svgHeight / 2 + scaledTotalHeight / 2;
+            const floorWidth = 140;
+            const pillarWidth = 50;
+            const leftMargin = 60;
+            
+            return `
+                <svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <pattern id="hatch" patternUnits="userSpaceOnUse" width="4" height="4">
+                            <path d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2" stroke="#999" stroke-width="0.5"/>
+                        </pattern>
+                    </defs>
+                    
+                    <rect x="${leftMargin}" y="${baseY - floorThickness * scale}" width="${floorWidth}" height="${floorThickness * scale}" 
+                          fill="url(#hatch)" stroke="#666" stroke-width="1.5"/>
+                    
+                    <rect x="${leftMargin + (floorWidth - pillarWidth) / 2}" y="${baseY - totalHeight * scale}" width="${pillarWidth}" height="${pillarHeight * scale}" 
+                          fill="rgba(50, 120, 200, 0.5)" stroke="#357abd" stroke-width="2"/>
+                    
+                    <!-- Floor dimension (red) -->
+                    <line x1="${leftMargin + floorWidth + 12}" y1="${baseY}" x2="${leftMargin + floorWidth + 12}" y2="${baseY - floorThickness * scale}" 
+                          stroke="${styles.dimensionColor}" stroke-width="${styles.lineWidth}"/>
+                    <line x1="${leftMargin + floorWidth + 9}" y1="${baseY}" x2="${leftMargin + floorWidth + 15}" y2="${baseY}" 
+                          stroke="${styles.dimensionColor}" stroke-width="${styles.lineWidth}"/>
+                    <line x1="${leftMargin + floorWidth + 9}" y1="${baseY - floorThickness * scale}" x2="${leftMargin + floorWidth + 15}" y2="${baseY - floorThickness * scale}" 
+                          stroke="${styles.dimensionColor}" stroke-width="${styles.lineWidth}"/>
+                    <text x="${leftMargin + floorWidth + 20}" y="${baseY - floorThickness * scale / 2}" fill="${styles.dimensionColor}" 
+                          font-size="${styles.fontSize}" font-weight="${styles.fontWeight}" text-anchor="start" dominant-baseline="middle">
+                        Floor: ${floorThickness.toFixed(1)} mm
+                    </text>
+                    
+                    <!-- Pillar dimension (red) -->
+                    <line x1="${leftMargin + floorWidth + 28}" y1="${baseY - floorThickness * scale}" x2="${leftMargin + floorWidth + 28}" y2="${baseY - totalHeight * scale}" 
+                          stroke="${styles.dimensionColor}" stroke-width="${styles.lineWidth}"/>
+                    <line x1="${leftMargin + floorWidth + 25}" y1="${baseY - floorThickness * scale}" x2="${leftMargin + floorWidth + 31}" y2="${baseY - floorThickness * scale}" 
+                          stroke="${styles.dimensionColor}" stroke-width="${styles.lineWidth}"/>
+                    <line x1="${leftMargin + floorWidth + 25}" y1="${baseY - totalHeight * scale}" x2="${leftMargin + floorWidth + 31}" y2="${baseY - totalHeight * scale}" 
+                          stroke="${styles.dimensionColor}" stroke-width="${styles.lineWidth}"/>
+                    <text x="${leftMargin + floorWidth + 36}" y="${baseY - (floorThickness + pillarHeight/2) * scale}" fill="${styles.dimensionColor}" 
+                          font-size="${styles.fontSize}" font-weight="${styles.fontWeight}" text-anchor="start" dominant-baseline="middle">
+                        Pillar: ${pillarHeight.toFixed(1)} mm
+                    </text>
+                    
+                    <!-- Total height (purple bracket) -->
+                    <line x1="${leftMargin - 20}" y1="${baseY}" x2="${leftMargin - 20}" y2="${baseY - totalHeight * scale}" 
+                          stroke="${styles.bracketColor}" stroke-width="${styles.lineWidth}" stroke-dasharray="4,4"/>
+                    <line x1="${leftMargin - 23}" y1="${baseY}" x2="${leftMargin - 17}" y2="${baseY}" 
+                          stroke="${styles.bracketColor}" stroke-width="${styles.lineWidth}"/>
+                    <line x1="${leftMargin - 23}" y1="${baseY - totalHeight * scale}" x2="${leftMargin - 17}" y2="${baseY - totalHeight * scale}" 
+                          stroke="${styles.bracketColor}" stroke-width="${styles.lineWidth}"/>
+                    <text x="${leftMargin - 30}" y="${baseY - totalHeight * scale / 2}" fill="${styles.bracketColor}" 
+                          font-size="${styles.fontSize}" font-weight="${styles.fontWeight}" text-anchor="middle" dominant-baseline="middle"
+                          transform="rotate(-90 ${leftMargin - 30} ${baseY - totalHeight * scale / 2})">
+                        Total: ${totalHeight.toFixed(1)} mm
+                    </text>
+                    
+                    <line x1="10" y1="${baseY}" x2="${svgWidth - 10}" y2="${baseY}" stroke="#333" stroke-width="2.5"/>
+                    
+                    <text x="${svgWidth / 2}" y="${svgHeight - 10}" fill="#666" font-size="${styles.fontSize}" font-weight="${styles.fontWeight}" text-anchor="middle">
+                        Side View (mm)
+                    </text>
+                </svg>
+            `;
+        }
+        
+        function resetDefaults() {
+            ['fontSize:11', 'fontWeight:bold', 'dimensionColor:#e74c3c', 'bracketColor:#9b59b6', 'lineWidth:1.5',
+             'labelBg:#ffffff', 'labelOpacity:0', 'labelPadding:4', 'dashPattern:3,3', 'capSize:8', 'bracketSize:10',
+             'dotSize:2', 'labelOffset:20', 'measurementOffset:-40', 'bracketLabelOffset:12', 'spacingLabelOffset:0',
+             'padXOffset:-35', 'padYOffset:-20'
+            ].forEach(pair => {
+                const [id, val] = pair.split(':');
+                document.getElementById(id).value = val;
+            });
+            document.getElementById('rotateVerticalLabels').checked = true;
+            updateValueDisplays();
+            redraw();
+        }
+        
+        function exportSettings() {
+            const settings = {
+                fontSize: parseInt(document.getElementById('fontSize').value),
+                fontWeight: document.getElementById('fontWeight').value,
+                dimensionColor: document.getElementById('dimensionColor').value,
+                bracketColor: document.getElementById('bracketColor').value,
+                lineWidth: parseFloat(document.getElementById('lineWidth').value),
+                labelBg: document.getElementById('labelBg').value,
+                labelOpacity: parseFloat(document.getElementById('labelOpacity').value),
+                labelPadding: parseFloat(document.getElementById('labelPadding').value),
+                dashPattern: document.getElementById('dashPattern').value,
+                capSize: parseFloat(document.getElementById('capSize').value),
+                bracketSize: parseFloat(document.getElementById('bracketSize').value),
+                dotSize: parseFloat(document.getElementById('dotSize').value),
+                labelOffset: parseFloat(document.getElementById('labelOffset').value),
+                measurementOffset: parseFloat(document.getElementById('measurementOffset').value),
+                bracketLabelOffset: parseFloat(document.getElementById('bracketLabelOffset').value),
+                spacingLabelOffset: parseFloat(document.getElementById('spacingLabelOffset').value),
+                padXOffset: parseFloat(document.getElementById('padXOffset').value),
+                padYOffset: parseFloat(document.getElementById('padYOffset').value),
+                rotateVerticalLabels: document.getElementById('rotateVerticalLabels').checked
+            };
+            const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'measurement-styles.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        function loadSettings(settings) {
+            document.getElementById('fontSize').value = settings.fontSize || 11;
+            document.getElementById('fontWeight').value = settings.fontWeight || 'bold';
+            document.getElementById('dimensionColor').value = settings.dimensionColor || '#e74c3c';
+            document.getElementById('bracketColor').value = settings.bracketColor || '#9b59b6';
+            document.getElementById('lineWidth').value = settings.lineWidth || 1.5;
+            document.getElementById('labelBg').value = settings.labelBg || '#ffffff';
+            document.getElementById('labelOpacity').value = settings.labelOpacity !== undefined ? settings.labelOpacity : 0;
+            document.getElementById('labelPadding').value = settings.labelPadding || 4;
+            document.getElementById('dashPattern').value = settings.dashPattern || '3,3';
+            document.getElementById('capSize').value = settings.capSize || 8;
+            document.getElementById('bracketSize').value = settings.bracketSize || 10;
+            document.getElementById('dotSize').value = settings.dotSize || 2;
+            document.getElementById('labelOffset').value = settings.labelOffset || 20;
+            document.getElementById('measurementOffset').value = settings.measurementOffset || -40;
+            document.getElementById('bracketLabelOffset').value = settings.bracketLabelOffset || 12;
+            document.getElementById('spacingLabelOffset').value = settings.spacingLabelOffset || 0;
+            document.getElementById('padXOffset').value = settings.padXOffset || -35;
+            document.getElementById('padYOffset').value = settings.padYOffset || -20;
+            document.getElementById('rotateVerticalLabels').checked = settings.rotateVerticalLabels !== false;
+            updateValueDisplays();
+            redraw();
+        }
+        
+        function updateValueDisplays() {
+            ['fontSize', 'lineWidth', 'labelOpacity', 'labelPadding', 'capSize', 'bracketSize', 'dotSize',
+             'labelOffset', 'measurementOffset', 'bracketLabelOffset', 'spacingLabelOffset', 'padXOffset', 'padYOffset'
+            ].forEach(id => {
+                document.getElementById(id + 'Value').textContent = document.getElementById(id).value + (id.includes('Opacity') ? '' : 'px');
+            });
+        }
+        
+        document.querySelectorAll('input, select').forEach(el => {
+            el.addEventListener('input', () => { updateValueDisplays(); redraw(); });
+            el.addEventListener('change', () => { updateValueDisplays(); redraw(); });
+        });
+        
+        document.getElementById('loadSettings').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    loadSettings(JSON.parse(event.target.result));
+                } catch (error) {
+                    alert('Error loading settings: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        });
+        
+        updateValueDisplays();
+        redraw();
+    </script>
+</body>
+</html>

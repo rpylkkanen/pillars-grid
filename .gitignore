@@ -1,0 +1,63 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pkl
+*.egg-info/
+*.egg
+*.log
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+ENV/
+
+# Jupyter Notebook checkpoints (if using Jupyter)
+.ipynb_checkpoints/
+
+# Pytest cache
+.pytest_cache/
+
+# mypy, coverage, etc.
+.mypy_cache/
+.coverage
+htmlcov/
+.cache/
+
+# === Node.js / Frontend ===
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# === Environment files ===
+.env
+.env.local
+.env.*.local
+
+# === OS / Editor / IDE files ===
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.bak
+*.tmp
+*.orig
+*.~undo
+.idea/
+.vscode/
+*.code-workspace
+
+# === Optional: lock files if not using them ===
+# package-lock.json
+# yarn.lock
